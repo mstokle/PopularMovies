@@ -6,6 +6,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Created by Mariano_Stokle on 13/07/2016.
+ * Popular Movies project for Udacity Project 1 - Android Developer Nanodegree
+ */
+
 public class PopMoviesActivity extends AppCompatActivity {
 
     @Override

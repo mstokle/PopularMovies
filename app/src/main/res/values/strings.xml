@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
+    <string name="TMDB_API_KEY">00ca032023d11792bc8744451c79cf95</string>
+    <string name="TMDB_API_PARAM">"api_key"</string>
+    <string name="TMDB_API_BASE_URL">http://api.themoviedb.org/3/movie</string>
+    <string name="TMDB_JSON_RESULTS">results</string>
+    <string name="TMDB_JSON_TITLE">title</string>
+    <string name="TMDB_JSON_OVERVIEW">overview</string>
+    <string name="TMDB_JSON_POSTER_PATH">poster_path</string>
+    <string name="TMDB_JSON_ID">id</string>
+    <string name="TMDB_JSON_RELEASE_DATE">release_date</string>
+    <string name="TMDB_JSON_RUNTIME">runtime</string>
+    <string name="TMDB_IMAGE_BASE_URL">http://image.tmdb.org/t/p/</string>
+    <string name="TMDB_IMAGE_PATH">w185/</string>
+    <string name="popular_path">popular</string>
+    <string name="top_rated_path">top_rated</string>
 </resources>

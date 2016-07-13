@@ -9,9 +9,11 @@
     tools:context="ar.com.stokle.popularmovies.PopMoviesActivityFragment"
     tools:showIn="@layout/activity_pop_movies">
 
-    <TextView
+
+    <GridView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
+        android:id="@+id/posters_gridView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
