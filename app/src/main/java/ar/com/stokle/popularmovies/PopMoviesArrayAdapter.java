@@ -29,16 +29,16 @@ public class PopMoviesArrayAdapter extends ArrayAdapter<PopMovie> {
 
         PopMovie movie = getItem(position);
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_pop_movies, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.poster_pop_movies, parent, false);
         }
 
         String base_url = getContext().getString(R.string.TMDB_IMAGE_BASE_URL);
         String image_path = getContext().getString(R.string.TMDB_IMAGE_PATH);
         String poster_url = base_url + image_path + movie.poster_path;
-        ImageView posterView = (ImageView) convertView;
+        ImageView posterView = (ImageView) convertView.findViewById(R.id.posterImageView);
         Picasso.with(getContext()).load(poster_url).into(posterView);
 
-        return posterView;
+        return convertView;
     }
 
 }

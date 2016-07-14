@@ -53,9 +53,9 @@ public class PopMoviesActivityFragment extends Fragment {
 
         GridView gridView = (GridView) rootView.findViewById(R.id.posters_gridView);
         ArrayList<PopMovie> cleanMovies = new ArrayList<>();
-        mPopMoviesArrayAdapter = new PopMoviesArrayAdapter(getActivity(),cleanMovies);
+        mPopMoviesArrayAdapter = new PopMoviesArrayAdapter(getActivity(), cleanMovies);
         gridView.setAdapter(mPopMoviesArrayAdapter);
-        return inflater.inflate(R.layout.fragment_pop_movies, container, false);
+        return rootView;
     }
 
     private ArrayList<PopMovie> getMoviesDataFromJson(String moviesJsonStr)
