@@ -1,5 +1,6 @@
 package ar.com.stokle.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -29,7 +31,9 @@ import java.util.ArrayList;
 
 public class PopMoviesActivityFragment extends Fragment {
 
-    PopMoviesArrayAdapter mPopMoviesArrayAdapter;
+    private PopMoviesArrayAdapter mPopMoviesArrayAdapter;
+
+    private ArrayList<PopMovie> listMovies;
 
     public PopMoviesActivityFragment() {
     }
@@ -37,7 +41,24 @@ public class PopMoviesActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        getMovies();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+            listMovies = new ArrayList<>();
+            getMovies();
+        }
+        else {
+            listMovies = savedInstanceState.getParcelableArrayList("movies");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        state.putParcelableArrayList("movies", listMovies);
+        super.onSaveInstanceState(state);
     }
 
     private void getMovies() {
@@ -52,9 +73,19 @@ public class PopMoviesActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_pop_movies, container, false);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.posters_gridView);
-        ArrayList<PopMovie> cleanMovies = new ArrayList<>();
-        mPopMoviesArrayAdapter = new PopMoviesArrayAdapter(getActivity(), cleanMovies);
+        mPopMoviesArrayAdapter = new PopMoviesArrayAdapter(getActivity(), listMovies);
         gridView.setAdapter(mPopMoviesArrayAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Integer movie_id = mPopMoviesArrayAdapter.getItem(i).id;
+                Intent popMovieDetailIntent = new Intent(getActivity(), PopMoviesDetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, movie_id)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(popMovieDetailIntent);
+            }
+        });
         return rootView;
     }
 
@@ -66,7 +97,7 @@ public class PopMoviesActivityFragment extends Fragment {
         JSONObject moviesJson = new JSONObject(moviesJsonStr);
         JSONArray moviesArray = moviesJson.getJSONArray(getString(R.string.TMDB_JSON_RESULTS));
 
-        for(int i = 0; i < moviesArray.length(); i++) {
+        for (int i = 0; i < moviesArray.length(); i++) {
             String poster_path;
             Integer id;
 
@@ -164,6 +195,7 @@ public class PopMoviesActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<PopMovie> result) {
             if (result != null) {
+                listMovies = result;
                 mPopMoviesArrayAdapter.clear();
                 for (PopMovie movies : result) {
                     mPopMoviesArrayAdapter.add(movies);
@@ -172,4 +204,3 @@ public class PopMoviesActivityFragment extends Fragment {
         }
     }
 }
-

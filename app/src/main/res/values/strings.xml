@@ -15,4 +15,5 @@
     <string name="TMDB_IMAGE_PATH">w185/</string>
     <string name="popular_path">popular</string>
     <string name="top_rated_path">top_rated</string>
+    <string name="title_activity_pop_movies_detail">PopMoviesDetailActivity</string>
 </resources>
