@@ -14,6 +14,9 @@ import android.view.MenuItem;
 
 public class PopMoviesActivity extends AppCompatActivity {
 
+    final static int SORT_BY_REQUEST_CODE = 1;
+    final static int SORT_BY_RESULT_CODE = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +49,9 @@ public class PopMoviesActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        switch (id)  {
+            case R.id.action_settings:
+            startActivity(new Intent(this,PopMoviesSettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
             return true;
         }
 

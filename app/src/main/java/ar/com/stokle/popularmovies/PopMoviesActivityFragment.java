@@ -1,9 +1,11 @@
 package ar.com.stokle.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +37,9 @@ public class PopMoviesActivityFragment extends Fragment {
 
     private ArrayList<PopMovie> listMovies;
 
+    private String mSort_by;
+
+
     public PopMoviesActivityFragment() {
     }
 
@@ -46,24 +51,45 @@ public class PopMoviesActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+        if((savedInstanceState == null) || !(savedInstanceState.containsKey("movies"))) {
             listMovies = new ArrayList<>();
             getMovies();
         }
         else {
+            mSort_by = savedInstanceState.getString(getString(R.string.pref_sort_by_key));
             listMovies = savedInstanceState.getParcelableArrayList("movies");
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sort_by = prefs.getString(getString(R.string.pref_sort_by_key),"1");
+        if (!sort_by.equals(mSort_by)) {
+            getMovies();
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
         state.putParcelableArrayList("movies", listMovies);
+        state.putString(getString(R.string.pref_sort_by_key), mSort_by);
         super.onSaveInstanceState(state);
     }
 
-    private void getMovies() {
+    public void getMovies() {
+        int sort_by_int;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sort_by = prefs.getString(getString(R.string.pref_sort_by_key),"1");
         FetchMoviesTask movieTask = new FetchMoviesTask();
-        movieTask.execute(R.string.popular_path);
+        if (sort_by.equals("1")) {
+            sort_by_int = R.string.popular_path;
+        } else {
+            sort_by_int = R.string.top_rated_path;
+        }
+        mSort_by = sort_by;
+        movieTask.execute(sort_by_int);
     }
 
     @Override
@@ -78,9 +104,9 @@ public class PopMoviesActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Integer movie_id = mPopMoviesArrayAdapter.getItem(i).id;
+                PopMovie movie = listMovies.get(i);
                 Intent popMovieDetailIntent = new Intent(getActivity(), PopMoviesDetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie_id)
+                        .putExtra("Movie",movie)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(popMovieDetailIntent);

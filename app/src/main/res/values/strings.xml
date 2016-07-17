@@ -5,6 +5,7 @@
     <string name="TMDB_API_PARAM">"api_key"</string>
     <string name="TMDB_API_BASE_URL">http://api.themoviedb.org/3/movie</string>
     <string name="TMDB_JSON_RESULTS">results</string>
+    <string name="TMDB_JSON_VOTE">vote_average</string>
     <string name="TMDB_JSON_TITLE">title</string>
     <string name="TMDB_JSON_OVERVIEW">overview</string>
     <string name="TMDB_JSON_POSTER_PATH">poster_path</string>
@@ -15,5 +16,24 @@
     <string name="TMDB_IMAGE_PATH">w185/</string>
     <string name="popular_path">popular</string>
     <string name="top_rated_path">top_rated</string>
-    <string name="title_activity_pop_movies_detail">PopMoviesDetailActivity</string>
+    <string name="title_activity_pop_movies_detail">Movie Detail</string>
+    <string name="title_activity_settings">Settings</string>
+    <!-- Strings related to Settings -->
+
+    <!-- Sort by settings -->
+    <string name="pref_header_general">General settings</string>
+
+    <string name="pref_sort_by_title">Sort by settings</string>
+
+    <string name="pref_sort_by_key">sort_by_list</string>
+
+    <string-array name="pref_sort_by_entries">
+        <item>Most Popular</item>
+        <item>Top Rated</item>
+    </string-array>
+    <string-array name="pref_sort_by_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

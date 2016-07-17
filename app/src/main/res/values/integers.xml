@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="SORT_BY_REQUEST_CODE">1</integer>
+    <integer name="SORT_BY_RESULT_CODE">2</integer>
+</resources>

@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * Popular Movies project for Udacity Project 1 - Android Developer Nanodegree
  */
 public class PopMovie implements Parcelable{
-    int id;
+    Integer id;
     String poster_path;
 
     public PopMovie (int movie_id, String movie_poster_path) {
@@ -34,7 +34,7 @@ public class PopMovie implements Parcelable{
         parcel.writeString(poster_path);
     }
 
-    public final Parcelable.Creator<PopMovie> CREATOR = new Parcelable.Creator<PopMovie>() {
+    public static final Parcelable.Creator<PopMovie> CREATOR = new Parcelable.Creator<PopMovie>() {
         @Override
         public PopMovie createFromParcel(Parcel parcel) {
             return new PopMovie(parcel);
