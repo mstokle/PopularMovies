@@ -1,6 +1,9 @@
 package ar.com.stokle.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -25,8 +29,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by Mariano_Stokle on 13/07/2016.
+ * Popular Movies project for Udacity Project 1 - Android Developer Nanodegree
  */
+
 public class PopMoviesDetailActivityFragment extends Fragment {
 
     private class PopMovieDetail {
@@ -70,23 +76,41 @@ public class PopMoviesDetailActivityFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_pop_movies_detail, container, false);
-        Intent intent  = getActivity().getIntent();
-        if (intent != null && intent.hasExtra("Movie")) {
-            PopMovie movie = intent.getParcelableExtra("Movie");
-            getMovieDetails(movie);
-            titleTextView = (TextView)rootView.findViewById(R.id.titleTextView);
-            posterImageView = (ImageView)rootView.findViewById(R.id.posterImageView);
-            durationTextView = (TextView)rootView.findViewById(R.id.runtimeTextView);
-            yearTextView = (TextView)rootView.findViewById(R.id.yearTextView);
-            voteTextView = (TextView)rootView.findViewById(R.id.voteTextView);
-            descriptionTextView = (TextView)rootView.findViewById(R.id.overviewTextView);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra(getString(R.string.bundle_movies_key))) {
+            PopMovie movie = intent.getParcelableExtra(getString(R.string.bundle_movies_key));
+            if (isNetworkUp()) {
+                getMovieDetails(movie);
+            } else {
+                Context context = getContext();
+                CharSequence text = getString(R.string.internet_connection);
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
         }
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_pop_movies_detail, container, false);
+        titleTextView = (TextView)rootView.findViewById(R.id.titleTextView);
+        posterImageView = (ImageView)rootView.findViewById(R.id.posterImageView);
+        durationTextView = (TextView)rootView.findViewById(R.id.runtimeTextView);
+        yearTextView = (TextView)rootView.findViewById(R.id.yearTextView);
+        voteTextView = (TextView)rootView.findViewById(R.id.voteTextView);
+        descriptionTextView = (TextView)rootView.findViewById(R.id.overviewTextView);
 
         return rootView;
+    }
+
+    private boolean isNetworkUp() {
+        ConnectivityManager cm = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 
     private void getMovieDetails(PopMovie movie) {
@@ -136,9 +160,7 @@ public class PopMoviesDetailActivityFragment extends Fragment {
 
             try {
                 Uri TMDB_Uri = Uri.parse(TMDB_Url).buildUpon().appendPath(movie_id).appendQueryParameter(API_PARAM, API_KEY).build();
-
                 URL TMDB_Url_Connection = new URL(TMDB_Uri.toString());
-
                 Log.v(LOG_TAG, "TMDB URI " + TMDB_Uri.toString());
 
                 urlConnection = (HttpURLConnection) TMDB_Url_Connection.openConnection();
@@ -163,7 +185,7 @@ public class PopMoviesDetailActivityFragment extends Fragment {
                 Log.d(LOG_TAG, movieDetailJsonStr);
 
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "Network Error ", e);
                 movieDetailJsonStr = null;
             } finally {
                 if (urlConnection != null) {
@@ -178,9 +200,11 @@ public class PopMoviesDetailActivityFragment extends Fragment {
                 }
             }
             try {
-                movieDetailData = getMovieDetailDataFromJson(movieDetailJsonStr, params[0]);
+                if (movieDetailJsonStr != null) {
+                    movieDetailData = getMovieDetailDataFromJson(movieDetailJsonStr, params[0]);
+                }
             } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "JSON Error ", e);
             }
             return movieDetailData;
         }
@@ -199,7 +223,6 @@ public class PopMoviesDetailActivityFragment extends Fragment {
                 Long vote = result.vote;
                 voteTextView.setText(vote.toString() + "/10");
                 descriptionTextView.setText(result.description);
-
             }
         }
     }

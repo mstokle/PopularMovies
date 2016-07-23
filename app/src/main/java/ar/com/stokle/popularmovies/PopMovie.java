@@ -7,6 +7,7 @@ import android.os.Parcelable;
  * Created by Mariano_Stokle on 13/07/2016.
  * Popular Movies project for Udacity Project 1 - Android Developer Nanodegree
  */
+
 public class PopMovie implements Parcelable{
     Integer id;
     String poster_path;

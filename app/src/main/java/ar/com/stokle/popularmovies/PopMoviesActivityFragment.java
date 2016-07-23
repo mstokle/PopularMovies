@@ -1,7 +1,10 @@
 package ar.com.stokle.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +47,12 @@ public class PopMoviesActivityFragment extends Fragment {
     public PopMoviesActivityFragment() {
     }
 
+    private boolean isNetworkUp() {
+        ConnectivityManager cm = (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -51,13 +61,21 @@ public class PopMoviesActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        if((savedInstanceState == null) || !(savedInstanceState.containsKey("movies"))) {
+        if((savedInstanceState == null) || !(savedInstanceState.containsKey(getString(R.string.bundle_movies_key)))) {
             listMovies = new ArrayList<>();
-            getMovies();
+            if (isNetworkUp()) {
+                getMovies();
+            } else {
+                Context context = getContext();
+                CharSequence text = getString(R.string.internet_connection);
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
         }
         else {
             mSort_by = savedInstanceState.getString(getString(R.string.pref_sort_by_key));
-            listMovies = savedInstanceState.getParcelableArrayList("movies");
+            listMovies = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_movies_key));
         }
     }
 
@@ -67,13 +85,21 @@ public class PopMoviesActivityFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort_by = prefs.getString(getString(R.string.pref_sort_by_key),"1");
         if (!sort_by.equals(mSort_by)) {
-            getMovies();
+            if (isNetworkUp()) {
+                getMovies();
+            } else {
+                Context context = getContext();
+                CharSequence text = getString(R.string.internet_connection);
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+            }
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
-        state.putParcelableArrayList("movies", listMovies);
+        state.putParcelableArrayList(getString(R.string.bundle_movies_key), listMovies);
         state.putString(getString(R.string.pref_sort_by_key), mSort_by);
         super.onSaveInstanceState(state);
     }
@@ -165,7 +191,7 @@ public class PopMoviesActivityFragment extends Fragment {
                     moviesPath = getString(R.string.top_rated_path);
                     break;
                 default:
-                    moviesPath = "popular";
+                    moviesPath = getString(R.string.popular_path);
             }
             try {
                 Uri TMDB_Uri = Uri.parse(TMDB_Url).buildUpon().appendPath(moviesPath).appendQueryParameter(API_PARAM, API_KEY).build();
@@ -196,7 +222,7 @@ public class PopMoviesActivityFragment extends Fragment {
                 Log.d(LOG_TAG, moviesJsonStr);
 
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "Network error: ", e);
                 moviesJsonStr = null;
             } finally {
                 if (urlConnection != null) {
@@ -211,9 +237,11 @@ public class PopMoviesActivityFragment extends Fragment {
                 }
             }
             try {
-                moviesData = getMoviesDataFromJson(moviesJsonStr);
+                if (moviesJsonStr != null) {
+                    moviesData = getMoviesDataFromJson(moviesJsonStr);
+                }
             } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "JSON Error: ", e);
             }
             return moviesData;
         }

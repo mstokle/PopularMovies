@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * Created by Mariano_Stokle on 13/07/2016.
  * Popular Movies project for Udacity Project 1 - Android Developer Nanodegree
  */
+
 public class PopMoviesArrayAdapter extends ArrayAdapter<PopMovie> {
 
     private static final String LOG_TAG = PopMoviesArrayAdapter.class.getSimpleName();
